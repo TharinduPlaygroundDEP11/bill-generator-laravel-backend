@@ -13,4 +13,8 @@ class Customer extends Model
         'acc_number',
         'name'
     ];
+
+    public function meterReadings() {
+        return $this->hasMany(MeterReadings::class);
+    }
 }

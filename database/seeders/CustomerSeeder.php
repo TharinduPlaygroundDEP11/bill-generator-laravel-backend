@@ -13,8 +13,6 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        Customer::truncate();
-        
         $csvFile = fopen(base_path("database/data/customers.csv"), "r");
 
         $firstLine = true;
