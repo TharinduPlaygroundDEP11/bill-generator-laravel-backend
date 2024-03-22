@@ -18,14 +18,26 @@ class MeterReadingController extends Controller
             return $selectedDate->lt($today);
         });
 
+        Validator::extend('unique_date', function ($attribute, $value, $parameters, $validator) {
+            $accountNumber = $validator->getData()['number'];
+            $customer = Customer::where('account_number', $accountNumber)->first();
+            $customerId = $customer->id;
+            echo($customerId);
+            $readingExist = MeterReading::where('customer_id', $customerId)
+                ->whereDate('date', $value)
+                ->exists();
+            return !$readingExist;
+        });
+
         $validator = Validator::make($request->all(), [
             'number' => 'required|exists:customers,account_number',
-            'date' => 'required|date|before_today',
-            'value' => 'required|integer|gt:0'
+            'date' => 'required|date|before_today|unique_date',
+            'value' => 'required|integer|gte:0'
         ], [
             'number.exists' => 'Account number does not exists',
             'date.required' => 'Reading date can not be empty',
             'date.before_today' => 'Reading date can not be a future date',
+            'date.unique_date' => 'Already added a reading to this date',
             'value.required' => 'Reading value can not be empty',
             'value.integer' => 'Reading value should be an number',
             'value.gt' => 'Reading value can not be negative'
@@ -47,9 +59,9 @@ class MeterReadingController extends Controller
             ->first();
 
         $nextReading = MeterReading::where('customer_id', $customerId)
-        ->whereDate('date', '>', $validatedData['date'])
-        ->orderBy('date')
-        ->first();
+            ->whereDate('date', '>', $validatedData['date'])
+            ->orderBy('date')
+            ->first();
 
         if ($previousReading && $validatedData['value'] < $previousReading->value) {
             return response()->json(['error' => 'Reading value should be larger than the previous value'], 422);
