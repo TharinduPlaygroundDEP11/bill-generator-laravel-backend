@@ -21,13 +21,14 @@ class MeterReadingController extends Controller
         $validator = Validator::make($request->all(), [
             'number' => 'required|exists:customers,account_number',
             'date' => 'required|date|before_today',
-            'value' => 'required|integer'
+            'value' => 'required|integer|gt:0'
         ], [
             'number.exists' => 'Account number does not exists',
             'date.required' => 'Reading date can not be empty',
             'date.before_today' => 'Reading date can not be a future date',
             'value.required' => 'Reading value can not be empty',
-            'value.integer' => 'Reading value should be an integer'
+            'value.integer' => 'Reading value should be an number',
+            'value.gt' => 'Reading value can not be negative'
         ]);
 
         if ($validator->fails()) {
