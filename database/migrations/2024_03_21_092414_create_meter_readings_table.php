@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('meter_readings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers');
-            $table->date('reading_date');
-            $table->integer('reading_value');
+            $table->date('date');
+            $table->integer('value');
             $table->timestamps();
         });
     }

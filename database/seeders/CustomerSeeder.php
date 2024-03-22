@@ -20,7 +20,7 @@ class CustomerSeeder extends Seeder
         while (($data = fgetcsv($csvFile, 1000, ",")) !== false) {
             if (!$firstLine) {
                 Customer::create([
-                    'acc_number' => $data[0],
+                    'account_number' => $data[0],
                     'name' => $data[1]
                 ]);
             }

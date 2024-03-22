@@ -10,11 +10,11 @@ class Customer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'acc_number',
+        'account_number',
         'name'
     ];
 
     public function meterReadings() {
-        return $this->hasMany(MeterReadings::class);
+        return $this->hasMany(MeterReading::class);
     }
 }
