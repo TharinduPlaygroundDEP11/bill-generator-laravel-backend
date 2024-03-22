@@ -60,12 +60,24 @@ class CustomerController extends Controller
         if ($totalAmount === 1500) {
             $firstRangeAmount = 600;
             $secondRangeAmount = 1050;
-            $thirdRangeAmount = ($totalUnits - 60) * 40;
+            $thirdRangeUnits = $totalUnits - 61;
+            $thirdRangeAmount = ($thirdRangeUnits + 1) * (40 + $thirdRangeUnits);
         }
 
         $totalAmount = $totalAmount + $firstRangeAmount + $secondRangeAmount + $thirdRangeAmount;
         
-        echo($totalAmount);
+        return response()->json([
+            'name'=> $customerName,
+            'lastDate'=> $lastReading->date,
+            'lastValue'=> $lastReading->value,
+            'previousDate'=> $previousReading->date,
+            'previousValue'=> $previousReading->value,
+            'totalUnits'=> $totalUnits,
+            'firstRangeAmount'=> $firstRangeAmount,
+            'secondRangeAmount'=> $secondRangeAmount,
+            'thirdRangeAmount'=> $thirdRangeAmount,
+            'totalAmount'=> $totalAmount
+        ], 200);
     }
 
     private function getFixedAmount($totalUnits) {
