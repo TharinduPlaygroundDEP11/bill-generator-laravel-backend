@@ -21,12 +21,15 @@ class MeterReadingController extends Controller
         Validator::extend('unique_date', function ($attribute, $value, $parameters, $validator) {
             $accountNumber = $validator->getData()['number'];
             $customer = Customer::where('account_number', $accountNumber)->first();
-            $customerId = $customer->id;
-            echo($customerId);
-            $readingExist = MeterReading::where('customer_id', $customerId)
-                ->whereDate('date', $value)
-                ->exists();
-            return !$readingExist;
+            if ($customer) {
+                $customerId = $customer->id;
+                $readingExist = MeterReading::where('customer_id', $customerId)
+                    ->whereDate('date', $value)
+                    ->exists();
+                return !$readingExist;
+            } else {
+                return response()->json(['errors' => $validator->errors()], 404);
+            }
         });
 
         $validator = Validator::make($request->all(), [
@@ -46,7 +49,7 @@ class MeterReadingController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        
         $validatedData = $validator->validated();
 
         $customer = Customer::where('account_number', $validatedData['number'])->first();
