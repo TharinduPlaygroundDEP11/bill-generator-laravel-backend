@@ -20,6 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/save', [MeterReadingController::class, 'save']);
+Route::group(['middleware' => 'cors'], function () {
 
-Route::get('/get/{number}', [CustomerController::class, 'get']);
+    Route::post('/save', [MeterReadingController::class, 'save']);
+    Route::get('/get/{number}', [CustomerController::class, 'get']);
+    
+});
