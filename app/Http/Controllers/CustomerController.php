@@ -29,12 +29,18 @@ class CustomerController extends Controller
         $customerId = $customer->id;
         $customerName = $customer->name;
 
-        $lastReading = MeterReading::where('customer_id', $customerId)
-            ->orderBy('date', 'desc')->first();
+        $exist = MeterReading::where('customer_id', $customerId)->first();
 
-        $previousReading = MeterReading::where('customer_id', $customerId)
-            ->where('date', '<', $lastReading->date)
-            ->orderBy('date', 'desc')->first();
+        if($exist) {
+            $lastReading = MeterReading::where('customer_id', $customerId)
+                ->orderBy('date', 'desc')->first();
+    
+            $previousReading = MeterReading::where('customer_id', $customerId)
+                ->where('date', '<', $lastReading->date)
+                ->orderBy('date', 'desc')->first();
+        } else {
+            return response()->json(['error'=>'No Recordings for account number'], 404);
+        }
 
         if (!$previousReading) {
             return response()->json(['error'=>'No previous readings'], 404);
@@ -63,7 +69,7 @@ class CustomerController extends Controller
             $thirdRangeAmount = ($thirdRangeUnits + 1) * (40 + $thirdRangeUnits);
         }
 
-        $totalAmount = $totalAmount + $firstRangeAmount + $secondRangeAmount + $thirdRangeAmount;
+        $totalAmount = ($totalAmount + $firstRangeAmount + $secondRangeAmount + $thirdRangeAmount);
         
         return response()->json([
             'name'=> $customerName,
@@ -72,10 +78,10 @@ class CustomerController extends Controller
             'previousDate'=> $previousReading->date,
             'previousValue'=> $previousReading->value,
             'totalUnits'=> $totalUnits,
-            'firstRangeAmount'=> $firstRangeAmount,
-            'secondRangeAmount'=> $secondRangeAmount,
-            'thirdRangeAmount'=> $thirdRangeAmount,
-            'totalAmount'=> $totalAmount
+            'firstRangeAmount'=> number_format($firstRangeAmount, 2),
+            'secondRangeAmount'=> number_format($secondRangeAmount, 2),
+            'thirdRangeAmount'=> number_format($thirdRangeAmount, 2),
+            'totalAmount'=> number_format($totalAmount, 2)
         ], 200);
     }
 
